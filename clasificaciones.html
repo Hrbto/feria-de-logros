@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Clasificaciones de WildCard Arcade: los mejores jugadores en total y por juego.">
+<title>Clasificaciones | WildCard Arcade</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏆</text></svg>">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Press+Start+2P&display=swap');
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  min-height:100vh;
+  color:#eee;
+  font-family:Orbitron,Arial,sans-serif;
+  background:
+    radial-gradient(circle at 91% 65%,rgba(36,112,145,.32),transparent 15%),
+    radial-gradient(circle at 75% 10%,rgba(112,30,160,.25),transparent 25%),
+    linear-gradient(90deg,#080718,#0a081d);
+  overflow-x:hidden;
+}
+.scanlines{
+  position:fixed;inset:0;z-index:20;pointer-events:none;opacity:.07;
+  background:repeating-linear-gradient(to bottom,transparent 0 3px,#fff 4px,#fff 5px);
+}
+
+.wrap{width:min(980px,100%);margin:0 auto;padding:28px 18px 50px}
+
+h1{
+  font-family:"Press Start 2P",monospace;
+  font-size:clamp(18px,4vw,30px);
+  line-height:1.4;
+  text-align:center;
+  margin:8px 0 10px;
+  color:#e9faff;
+  text-shadow:0 0 4px #fff,0 0 12px #4df4ff,3px 3px 0 #6e3b9d;
+}
+.sub{text-align:center;color:#b9b5c8;font-size:12px;margin:0 0 26px}
+
+/* Pestañas */
+.tabs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:22px}
+.tabs button{
+  font-family:inherit;font-size:11px;font-weight:800;letter-spacing:1px;
+  padding:10px 16px;cursor:pointer;
+  color:#55efff;background:#0c0920;
+  border:1px solid rgba(85,239,255,.5);border-radius:6px;
+}
+.tabs button:hover{background:rgba(85,239,255,.12)}
+.tabs button[aria-selected="true"]{
+  color:#13091e;background:#ff4bdb;border-color:#ff4bdb;
+  box-shadow:0 0 12px rgba(255,75,219,.5);
+}
+.tabs button:focus-visible,.me a:focus-visible{outline:2px solid #4df3ff;outline-offset:2px}
+
+/* Tu posición */
+.me{
+  margin-bottom:20px;padding:14px 18px;text-align:center;
+  font-size:12px;line-height:1.7;color:#ddd;
+  background:linear-gradient(135deg,rgba(12,9,32,.95),rgba(11,8,29,.85));
+  border:1px solid rgba(255,216,77,.6);border-radius:9px;
+  box-shadow:0 0 12px rgba(255,216,77,.12);
+}
+.me strong{color:#ffe157}
+.me b{color:#fff}
+.me a{color:#54efff}
+
+/* Tabla */
+.tablewrap{
+  overflow-x:auto;
+  background:linear-gradient(135deg,rgba(12,9,32,.95),rgba(11,8,29,.85));
+  border:1px solid rgba(214,61,227,.75);border-radius:9px;
+  box-shadow:0 0 10px rgba(210,40,230,.14),inset 0 0 18px rgba(110,38,150,.07);
+}
+table{width:100%;border-collapse:collapse;min-width:560px}
+th,td{padding:12px 14px;text-align:right;font-size:12px;white-space:nowrap}
+th:nth-child(1),td:nth-child(1){text-align:center;width:64px}
+th:nth-child(2),td:nth-child(2){text-align:left;width:100%;max-width:240px;overflow:hidden;text-overflow:ellipsis}
+thead th{
+  color:#55efff;font-size:10px;letter-spacing:1px;
+  border-bottom:1px solid rgba(85,239,255,.3);
+  text-shadow:0 0 9px #27dce8;
+}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.06)}
+tbody tr:last-child{border-bottom:0}
+tbody tr:hover{background:rgba(85,239,255,.06)}
+td.sorted,th.sorted{color:#ff7be5}
+td.sorted{font-weight:800}
+tr.top1 td:nth-child(2){color:#ffe157}
+tr.top2 td:nth-child(2){color:#dfe7ee}
+tr.top3 td:nth-child(2){color:#e8a76b}
+tr.mine{background:rgba(255,216,77,.12);box-shadow:inset 3px 0 0 #ffd84d}
+tr.mine td:nth-child(2){color:#ffe157;font-weight:800}
+
+.empty{padding:34px 18px;text-align:center;color:#b9b5c8;font-size:12px;line-height:1.8}
+.empty a{color:#ff63da}
+.count{margin:14px 0 0;text-align:center;color:#666276;font-size:10px;letter-spacing:1px}
+
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto !important}}
+</style>
+</head>
+<body>
+<div class="scanlines" aria-hidden="true"></div>
+
+<main class="wrap">
+  <h1>CLASIFICACIONES</h1>
+  <p class="sub">Los mejores jugadores de WildCard Arcade</p>
+
+  <div class="tabs" role="tablist" aria-label="Ver clasificación por" id="tabs"></div>
+
+  <section class="me" id="me" aria-live="polite"></section>
+
+  <div class="tablewrap">
+    <table>
+      <thead id="head"></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="empty" id="empty" hidden></div>
+  </div>
+  <p class="count" id="count"></p>
+</main>
+
+<script src="firebase-config.js"></script>
+<script src="backend.js"></script>
+<script src="scores.js"></script>
+<script src="menu.js"></script>
+<script>
+  // [clave, nombre en la tabla]
+  var COLUMNS = [
+    ["total", "TOTAL"],
+    ["diferencias", "DIFERENCIAS"],
+    ["cartas", "PAREJAS"],
+    ["memorizar", "MEMORIZAR"]
+  ];
+  var sortKey = "total";
+
+  var tabsEl = document.getElementById("tabs");
+  var headEl = document.getElementById("head");
+  var rowsEl = document.getElementById("rows");
+  var meEl = document.getElementById("me");
+  var emptyEl = document.getElementById("empty");
+  var countEl = document.getElementById("count");
+
+  var fmt = function (n) { return n.toLocaleString("en-US"); };
+  var val = function (entry, key) {
+    return key === "total" ? entry.total : ((entry.games && entry.games[key]) || 0);
+  };
+  var label = function (key) {
+    return COLUMNS.filter(function (c) { return c[0] === key; })[0][1];
+  };
+
+  function el(tag, text, cls) {
+    var e = document.createElement(tag);
+    if (text !== undefined) e.textContent = text;   // textContent: nombres siempre seguros
+    if (cls) e.className = cls;
+    return e;
+  }
+
+  // ----- Pestañas -----
+  COLUMNS.forEach(function (c) {
+    var b = el("button", c[0] === "total" ? "GENERAL" : c[1]);
+    b.type = "button";
+    b.setAttribute("role", "tab");
+    b.dataset.key = c[0];
+    b.addEventListener("click", function () { sortKey = c[0]; render(); });
+    tabsEl.appendChild(b);
+  });
+
+  // ----- Encabezado de la tabla -----
+  function renderHead() {
+    headEl.innerHTML = "";
+    var tr = document.createElement("tr");
+    tr.appendChild(el("th", "#"));
+    tr.appendChild(el("th", "JUGADOR"));
+    COLUMNS.forEach(function (c) {
+      tr.appendChild(el("th", c[1], c[0] === sortKey ? "sorted" : ""));
+    });
+    headEl.appendChild(tr);
+  }
+
+  function render() {
+    var S = window.WildCardScores;
+    var me = (S.getUser() || "").trim();
+    var meId = me.toLowerCase();
+
+    // Pestañas: cuál está activa
+    Array.prototype.forEach.call(tabsEl.children, function (b) {
+      b.setAttribute("aria-selected", b.dataset.key === sortKey);
+    });
+    renderHead();
+
+    // Lista ordenada por la columna elegida (quienes tienen 0 en ese juego no aparecen)
+    var list = S.getRanking(10000)
+      .filter(function (e) { return val(e, sortKey) > 0; })
+      .sort(function (a, b) {
+        return val(b, sortKey) - val(a, sortKey) || a.name.localeCompare(b.name);
+      });
+
+    // Posiciones (empates comparten puesto: 1, 2, 2, 4...)
+    var ranks = [];
+    list.forEach(function (e, i) {
+      ranks.push(i > 0 && val(e, sortKey) === val(list[i - 1], sortKey) ? ranks[i - 1] : i + 1);
+    });
+
+    // Filas
+    rowsEl.innerHTML = "";
+    var medals = { 1: "🥇", 2: "🥈", 3: "🥉" };
+    list.forEach(function (e, i) {
+      var rank = ranks[i];
+      var tr = document.createElement("tr");
+      if (rank <= 3) tr.classList.add("top" + rank);
+      if (me && e.name.toLowerCase() === meId) tr.classList.add("mine");
+
+      tr.appendChild(el("td", medals[rank] || String(rank)));
+      tr.appendChild(el("td", e.name));
+      COLUMNS.forEach(function (c) {
+        tr.appendChild(el("td", fmt(val(e, c[0])), c[0] === sortKey ? "sorted" : ""));
+      });
+      rowsEl.appendChild(tr);
+    });
+
+    // Vacío
+    emptyEl.hidden = list.length > 0;
+    document.querySelector("table").hidden = list.length === 0;
+    if (list.length === 0) {
+      emptyEl.innerHTML = "";
+      emptyEl.append(
+        sortKey === "total" ? "Aún no hay puntuaciones. " : "Nadie ha puntuado en este juego todavía. ",
+        "¡Sé el primero! ",
+        Object.assign(document.createElement("a"), { href: "index.html#juegos", textContent: "Ir a jugar" })
+      );
+    }
+    var MODES = {
+      online: " · EN LÍNEA",
+      connecting: " · CONECTANDO…",
+      offline: " · SIN CONEXIÓN (SOLO ESTE NAVEGADOR)",
+      local: " · MODO LOCAL (SOLO ESTE NAVEGADOR)"
+    };
+    countEl.textContent = list.length + (list.length === 1 ? " JUGADOR" : " JUGADORES") + MODES[S.mode()];
+
+    // Tu posición
+    meEl.innerHTML = "";
+    if (!me) {
+      meEl.append("Inicia sesión desde el ", Object.assign(document.createElement("a"), { href: "index.html", textContent: "inicio" }), " para ver tu posición.");
+    } else {
+      var idx = -1;
+      list.forEach(function (e, i) { if (e.name.toLowerCase() === meId) idx = i; });
+      if (idx === -1) {
+        meEl.append(el("b", me), " · todavía no tienes puntos en " + (sortKey === "total" ? "total" : label(sortKey)) + ". ",
+          Object.assign(document.createElement("a"), { href: "index.html#juegos", textContent: "¡Juega!" }));
+      } else {
+        meEl.append("TU POSICIÓN: ", el("strong", "#" + ranks[idx]),
+          " de " + list.length + " · ", el("b", me), " · ",
+          el("strong", fmt(val(list[idx], sortKey)) + " pts"));
+      }
+    }
+  }
+
+  // Se actualiza al volver con "atrás" o si otra pestaña cambia los datos
+  window.addEventListener("pageshow", render);
+  window.addEventListener("storage", render);
+  window.addEventListener("wildcardscores", render);   // cuando llegan datos de la nube
+  render();
+</script>
+</body>
+</html>

@@ -1,0 +1,543 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Press+Start+2P&display=swap');
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+ margin:0;
+ background:#070616;
+ color:#eee;
+ font-family:Orbitron,Arial,sans-serif;
+ min-height:100vh;
+ overflow-x:hidden;
+}
+.arcade-bg{
+ position:fixed;inset:0;z-index:-3;
+ background:
+ radial-gradient(circle at 91% 65%,rgba(36,112,145,.32),transparent 15%),
+ radial-gradient(circle at 75% 10%,rgba(112,30,160,.25),transparent 25%),
+ linear-gradient(90deg,rgba(8,7,24,.97),rgba(10,8,29,.94));
+}
+.arcade-bg:after{
+ content:"";
+ position:absolute;
+ right:-60px;
+ bottom:-50px;
+ width:470px;
+ height:530px;
+ opacity:.3;
+ 
+ background:
+ radial-gradient(ellipse at 60% 25%,#7436a4 0 4%,transparent 5%),
+ linear-gradient(145deg,transparent 30%,rgba(80,220,255,.18) 31% 45%,transparent 46%),
+ linear-gradient(35deg,transparent 43%,rgba(255,70,210,.16) 44% 50%,transparent 51%);
+ filter:blur(8px);
+ transform:rotate(-8deg);
+}
+
+.scanlines{
+    position:fixed;
+    inset:0;
+    z-index:20;
+    pointer-events:none;
+    opacity:.08;
+ background:repeating-linear-gradient(to bottom,transparent 0 3px,#fff 4px,#fff 5px);
+}
+
+.header{
+ height:84px;
+ display:flex;
+ align-items:center;
+ gap:28px;
+ padding:10px 20px;
+ background:rgba(6,5,22,.94);
+ border-bottom:1px solid rgba(91,240,255,.2);
+ box-shadow:0 5px 30px rgba(0,0,0,.35);
+ position:sticky;
+ top:0;
+ z-index:10;
+}
+
+.hamburger{
+ width:74px;
+ height:61px;
+ border-radius:10px;
+ border:2px solid #4df3ff;
+ background:rgba(36,230,255,.06);
+ box-shadow:0 0 13px #24dce8,inset 0 0 15px rgba(73,247,255,.12);
+ padding:13px;
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+ gap:7px;
+}
+
+.hamburger i{
+    height:4px;
+    background:#54f6ff;
+    border-radius:4px;
+    box-shadow:0 0 7px #54f6ff}
+
+.brand{
+    font-family:Press Start 2P,monospace;
+    line-height:1.2;
+    min-width:235px;
+    text-shadow:0 0 13px #39f4ff}
+
+.brand div{
+    font-size:18px;
+    color:#6ff6ff}
+    .brand b{
+        font-size:17px;
+        color:#ff5bd9;
+        margin-left:43px}
+nav{
+    position:fixed;
+    top:84px;
+    left:-260px;
+    width:250px;
+    height:100vh;
+
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:20px;
+
+    padding:20px;
+
+    background:rgba(6,5,22,.98);
+
+    border-right:2px solid #4df3ff;
+
+    transition:left .4s ease;
+
+    z-index:999;
+}
+nav a{
+    width:100%;
+    padding:12px;
+
+    color:white;
+    text-decoration:none;
+
+    border-bottom:1px solid rgba(255,255,255,.1);
+}
+nav.show {
+    left: 0;
+}
+
+nav a:hover{
+    color:#ff62dc;
+}
+nav a:hover,nav a.active{
+color:#ff62dc;
+text-shadow:0 0 12px #ff42ce}
+nav a.active{
+border-bottom:2px solid #52efff;
+padding-bottom:9px}
+
+.page{
+ width:min(1490px,100%);
+ margin:auto;
+ padding:16px 24px 45px;
+ display:grid;
+ grid-template-columns:245px minmax(500px,1fr) 245px;
+ gap:22px;
+}
+
+.left,.right{
+    display:flex;
+    flex-direction:column;
+    gap:17px}
+.sidebox{
+ background:linear-gradient(135deg,rgba(12,9,32,.95),rgba(11,8,29,.85));
+ border:1px solid rgba(214,61,227,.75);
+ border-radius:9px;padding:13px;
+ box-shadow:0 0 10px rgba(210,40,230,.14),inset 0 0 18px rgba(110,38,150,.07);
+}
+
+.sidebox h3{font-size:15px;
+    color:#55efff;
+    margin:0 0 14px;
+    text-shadow:0 0 9px #27dce8}
+.tourline{
+    font-size:12px;
+    padding:9px 4px}
+.tourline span{
+    float:right;
+    color:#ddd}
+.scorebox h3{
+    color:#54efff}
+.scorebox h3 strong{
+    color:#ffe157}
+.scorebox small{
+    color:#ffd84d;
+    font-size:10px}
+.chatbox{
+    height:505px;
+    display:flex;
+    flex-direction:column}
+.chatmessages{
+    flex:1;overflow:hidden;
+    border-top:1px solid rgba(78,225,255,.13)}
+.chatmessages p{
+    font-size:9px;
+    line-height:1.45;
+    color:#d2cfdd;
+    margin:10px 0}
+.chatmessages b{
+    color:#51e8ff}
+.chatmessages em{
+    font-style:normal}
+.chatinput{
+    display:flex;
+    border:1px solid rgba(66,226,255,.5);
+    height:29px}
+.chatinput input{
+    width:100%;
+    background:#08071c;
+    border:0;
+    outline:0;
+    color:#fff}
+.chatinput button{
+    width:36px;
+    background:transparent;
+    border:0;color:#62f3ff;
+    font-size:17px}
+
+.banner{
+ height:220px;
+ border:2px solid #64efff;
+ border-radius:13px;
+ position:relative;
+ overflow:hidden;
+ background:linear-gradient(90deg,#170b2b,#09204a 50%,#170b2b);
+ box-shadow:0 0 9px #36e5f5,0 0 22px rgba(255,51,214,.35),inset 0 0 28px rgba(0,217,255,.12);
+}
+.banner:before{
+    content:"";
+    position:absolute;
+    inset:6px;
+    border:1px solid rgba(255,91,213,.75);
+    border-radius:9px;
+    box-shadow:0 0 12px rgba(255,61,220,.6)}
+.stars{
+    position:absolute;
+    inset:0;
+    background-image:radial-gradient(#fff 1px,transparent 1.6px);
+    background-size:65px 47px;
+    opacity:.42}
+.bannertext{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    flex-direction:column;
+    justify-content:center;
+    z-index:3}
+.galactic,.renegades{
+    font-family:Press Start 2P,monospace;
+    font-size:38px;
+    line-height:1.1;color:#e9faff;
+    text-shadow:0 0 4px white,0 0 12px #4df4ff,4px 4px 0 #6e3b9d}
+.renegades{
+    font-size:38px}
+.tournament{
+    font-size:26px;
+    font-weight:900;
+    color:#54efff;
+    margin-top:7px;
+    text-shadow:0 0 10px #1ce8ff}
+.bannercta{
+    font-size:16px;
+    color:#ffe34f;
+    font-weight:900;
+    margin-top:13px;
+    text-shadow:0 0 10px #ffd43e}
+.spaceship{
+    position:absolute;
+    color:#eafcff;
+    font-size:64px;
+    z-index:4;
+    text-shadow:0 0 8px #ff572e,0 0 14px #62eaff}
+.leftship{
+    left:65px;
+    top:25px;
+    transform:rotate(-22deg)}
+    .leftship2{
+        left:35px;
+        bottom:22px;
+        transform:rotate(-18deg)}
+.rightship{
+    right:65px;
+    top:25px;
+    transform:rotate(20deg)}
+    .rightship2{
+        right:30px;
+        bottom:20px;
+        transform:rotate(16deg)}
+
+.intro{
+    text-align:center;
+    padding:31px 10px 29px}
+.intro h2{
+    font-size:22px;
+    margin:0 0 15px}
+.intro p{
+    font-family:Press Start 2P,monospace;
+    font-size:12px;
+    line-height:1.65;
+    margin:0;
+    color:#ddd}
+.intro p span{
+    color:#67efff}
+    .intro p b{
+        color:#fff}
+.neon-divider{
+    height:2px;
+    background:linear-gradient(90deg,transparent,#55f0ff,transparent);
+    box-shadow:0 0 10px #55f0ff;
+    margin-bottom:20px}
+.game-row{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px}
+.game{
+    padding:12px;
+    border:1px solid rgba(73,247,255,.45);
+    background:rgba(7,7,26,.7);
+    text-align:center}
+.gameicon{
+    height:90px;
+    display:grid;
+    place-items:center;
+    font-size:46px;
+    background:radial-gradient(circle,rgba(95,43,150,.45),transparent 70%);
+    border-bottom:1px solid rgba(255,77,218,.3)}
+.game h3{
+    font-size:13px;
+    color:#53ecff}
+    .game p{
+        font-size:10px;
+        color:#aaa}
+        .game button,.ranking button{
+            background:#170d27;
+            color:#ff63da;
+            border:1px solid #ff4bdb;
+            padding:7px 18px;
+            font-weight:800;
+            cursor:pointer;
+            box-shadow:0 0 10px rgba(255,75,219,.3)}
+.game button:hover,.ranking button:hover{
+    background:#ff4bdb;
+    color:#13091e}
+
+.record b{
+    font-size:12px}
+.record small{
+    font-size:8px;
+    line-height:1.5;
+    color:#b9b5c8}
+.ranking{
+    margin-top:auto}
+    .ranking button{
+        display:block;
+        margin:13px auto 0}
+
+footer{
+    max-width:1490px;
+    margin:auto;
+    padding:0 25px 25px;
+    color:#666276;
+    font-size:9px;
+    display:flex;
+    justify-content:space-between}
+
+@media(max-width:1100px){
+ nav{gap:15px}nav a{font-size:10px}.brand{min-width:190px}.brand div{font-size:14px}.brand b{font-size:13px}
+ .page{grid-template-columns:200px 1fr}.right{display:none}
+}
+@media(max-width:760px){
+ .header{
+    height:auto;
+    flex-wrap:wrap}
+    .brand{min-width:0}
+    .brand div{font-size:12px}
+    .brand b{font-size:11px}
+ nav{width:100%;
+    overflow-x:auto;
+    order:3;
+    padding-bottom:5px}
+ .page{
+    display:block;padding:12px}
+    .left{display:none}
+    .banner{height:205px}
+ .galactic,.renegades{font-size:25px}
+ .tournament{font-size:17px}
+ .bannercta{font-size:10px}
+ .spaceship{font-size:40px}
+ .intro p{font-size:8px}
+ .game-row{grid-template-columns:1fr}
+}
+
+/* Lateral iquierdo */
+
+.hamburger{
+    width:74px;
+    height:61px;
+    border-radius:10px;
+    border:2px solid #4df3ff;
+    background:rgba(36,230,255,.06);
+    box-shadow:0 0 13px #24dce8,inset 0 0 15px rgba(73,247,255,.12);
+    padding:13px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:7px;
+    cursor:pointer;
+}
+
+.hamburger i{
+    display:block;
+    height:4px;
+    background:#54f6ff;
+    border-radius:4px;
+    box-shadow:0 0 7px #54f6ff;
+    transition:all .35s ease;
+}
+
+/* Transformación a X */
+
+.hamburger.active i:nth-child(1){
+    transform:translateY(11px) rotate(45deg);
+}
+
+.hamburger.active i:nth-child(2){
+    opacity:0;
+}
+
+.hamburger.active i:nth-child(3){
+    transform:translateY(-11px) rotate(-45deg);
+}
+
+/* ===== Mejoras ===== */
+
+/* Menú lateral: oculto de verdad cuando está cerrado (no recibe foco con Tab) */
+nav{
+    top:84px;
+    bottom:0;
+    height:auto;
+    width:250px;
+    overflow-y:auto;
+    visibility:hidden;
+    transition:left .4s ease, visibility 0s .4s;
+}
+nav.show{
+    visibility:visible;
+    transition:left .4s ease, visibility 0s 0s;
+}
+nav a{font-size:14px}
+
+/* Accesibilidad */
+.skip-link{position:absolute;left:-999px;top:0;background:#fff;color:#000;padding:8px 14px;z-index:1000}
+.skip-link:focus{left:8px;top:8px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid #4df3ff;outline-offset:2px}
+
+/* Botón "¡JUEGA AHORA!" ahora es enlace */
+a.bannercta{text-decoration:none}
+a.bannercta:hover{color:#fff}
+
+/* Lista de puntuaciones */
+.scorelist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.scorelist li{display:flex;justify-content:space-between;font-size:11px}
+.scorelist li span:last-child{color:#55efff}
+
+/* Botón "JUGAR" mientras carga */
+.game button:disabled{opacity:.7;cursor:wait}
+
+/* Tablet: el ranking ya no se oculta, pasa debajo */
+@media(max-width:1100px){
+ .right{display:flex;grid-column:1/-1}
+}
+
+/* Móvil: el chat y el ranking se muestran debajo de los juegos */
+@media(max-width:760px){
+ .header{height:84px;flex-wrap:nowrap;gap:14px}
+ .page{display:flex;flex-direction:column}
+ .main{order:1}
+ .left{display:flex;order:2;margin-top:17px}
+ .right{order:3;margin-top:17px}
+ .chatbox{height:380px}
+}
+
+@media (prefers-reduced-motion:reduce){
+ *{animation:none !important;transition:none !important;scroll-behavior:auto !important}
+}
+
+/* ===== Ingreso de usuario ===== */
+.login-overlay{
+    position:fixed;inset:0;z-index:2000;
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+    background:rgba(7,6,22,.94);
+}
+.login-overlay[hidden]{display:none}
+.login-box{
+    width:min(380px,100%);
+    padding:28px 24px;
+    text-align:center;
+    background:linear-gradient(135deg,rgba(12,9,32,.98),rgba(11,8,29,.95));
+    border:2px solid #64efff;
+    border-radius:13px;
+    box-shadow:0 0 12px #36e5f5,0 0 28px rgba(255,51,214,.35),inset 0 0 28px rgba(0,217,255,.12);
+}
+.login-box h2{
+    font-family:"Press Start 2P",monospace;
+    font-size:14px;line-height:1.5;
+    color:#6ff6ff;margin:0 0 12px;
+    text-shadow:0 0 10px #39f4ff;
+}
+.login-box p{font-size:12px;color:#bbb;margin:0 0 18px}
+.login-box input{
+    width:100%;padding:12px;margin-bottom:16px;
+    background:#08071c;color:#fff;
+    border:1px solid rgba(66,226,255,.6);border-radius:6px;
+    font-family:inherit;font-size:14px;text-align:center;
+}
+.login-box button{
+    background:#170d27;color:#ff63da;
+    border:1px solid #ff4bdb;
+    padding:10px 28px;font-weight:800;cursor:pointer;
+    box-shadow:0 0 10px rgba(255,75,219,.3);
+}
+.login-box button:hover{background:#ff4bdb;color:#13091e}
+
+.scorebox small b,.scorebox #currentUser{color:#fff;font-weight:700}
+.linkbtn{
+    background:none;border:0;padding:0 0 0 6px;
+    color:#54efff;font-size:10px;font-family:inherit;
+    text-decoration:underline;cursor:pointer;
+}
+.chatinput input[readonly]{color:#54efff}
+
+/* ===== Ranking funcional ===== */
+.scorelist li{gap:10px}
+.scorelist li span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.scorelist li:only-child{display:block;color:#b9b5c8;font-size:10px;line-height:1.5}
+.scorelist li.me span{color:#ffe157;text-shadow:0 0 8px rgba(255,225,87,.6)}
+
+/* Enlace a la página de clasificaciones */
+.viewall{
+    display:block;margin:14px auto 0;padding:8px 12px;text-align:center;
+    background:#170d27;color:#ff63da;
+    border:1px solid #ff4bdb;
+    font-size:10px;font-weight:800;text-decoration:none;
+    box-shadow:0 0 10px rgba(255,75,219,.3);
+}
+.viewall:hover{background:#ff4bdb;color:#13091e}
+
+/* Chat: permite desplazarse por los mensajes */
+.chatmessages{overflow-y:auto}
+
+/* Vista previa de la comunidad en la portada */
+.chatbox{height:auto;min-height:230px}
+.chatbox .chatmessages{max-height:210px;overflow-y:auto}

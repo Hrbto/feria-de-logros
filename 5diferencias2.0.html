@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>5 DIFERENCIAS EN IMAGENES</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Inter:wght@400;500;700;800&display=swap');
+
+:root {
+    --purple: #a855f7;
+    --cyan: #22d3ee;
+    --bg: #070710;
+    --card: #10101e;
+    --white: #0de71f;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background:
+        radial-gradient(ellipse at 50% 0%, #35205c55, transparent 55%),
+        var(--bg);
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 7%;
+    border-bottom: 1px solid #ffffff12;
+}
+
+.logo {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 3px;
+}
+
+.logo span {
+    color: var(--cyan);
+}
+
+.status {
+    color: #eb0e0e;
+    font-size: 11px;
+    letter-spacing: 2px;
+}
+
+.status b {
+    color: #4ade80;
+}
+
+.hero {
+    text-align: center;
+    padding: 55px 15px 32px;
+}
+
+.tag {
+    display: inline-block;
+    padding: 8px 14px;
+    border: 1px solid #dbf308f8;
+    background: #d414248f;
+    border-radius: 5px;
+    color: #c4da75;
+    font-size: 10px;
+    letter-spacing: 3px;
+}
+
+h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(30px, 6vw, 57px);
+    margin: 22px 0 12px;
+    line-height: 1.2;
+}
+
+h1 span {
+    color: var(--cyan);
+    text-shadow: 0 0 28px #22d3ee55;
+}
+
+.hero p {
+    color: #ffffff;
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+main {
+    width: min(1400px, 90%);
+    margin: 0 auto;
+}
+
+.dashboard {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 24px;
+    background: linear-gradient(120deg, #5c038693, #a8df1069);
+    border: 1px solid #ffffffd3;
+    border-radius: 12px;
+    margin-bottom: 18px;
+}
+
+.dashboard small {
+    color: #0ae9e9;
+    font-size: 10px;
+    letter-spacing: 2px;
+}
+
+.dashboard h2 {
+    font-size: 17px;
+    margin-top: 6px;
+}
+
+.score {
+    text-align: right;
+    font-family: 'Orbitron', sans-serif;
+    color: var(--cyan);
+    font-size: 27px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.score small {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    margin-top: 4px;
+}
+
+.track {
+    height: 5px;
+    background: #920909;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 26px;
+}
+
+#bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple), var(--cyan));
+    box-shadow: 0 0 15px var(--cyan);
+    transition: width .4s;
+}
+
+.images {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.image-card {
+    padding: 12px;
+    background: linear-gradient(145deg, #14141d, #3b3b41);
+    border: 1px solid #ffffffee;
+    border-radius: 12px;
+    transition: border .3s;
+}
+
+.image-card:hover {
+    border-color: #d3cdd877;
+}
+
+.card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 2px 13px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.card-head span:last-child {
+    color: var(--cyan);
+    font-size: 9px;
+}
+
+.photo {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: 7px;
+    background: #0909dd;
+    border: 1px solid #000000b2;
+}
+
+.photo img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: fill;
+}
+
+.hit {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 13%;
+    height: 15%;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    background: transparent;
+    cursor: crosshair;
+}
+
+.hit:hover {
+    border-color: var(--cyan);
+    background: #22ee2c22;
+}
+
+.hit.done {
+    border-color: #4ade80;
+    background: #4ade8030;
+    box-shadow: 0 0 15px #4ade8070;
+}
+
+.hit.done::after {
+    content: "✓";
+    color: #bdb9ce;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.bottom {
+    text-align: center;
+    padding: 27px 10px 45px;
+}
+
+#message {
+    min-height: 26px;
+    color: #c4f513;
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 17px;
+}
+
+button.reset {
+    padding: 13px 24px;
+    color: rgb(74, 247, 6);
+    background: #a855f719;
+    border: 1px solid #10f84a77;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+button.reset:hover {
+    background: #6f1bbed0;
+    box-shadow: 0 0 20px #cf3c3c6c;
+}
+
+a.reset.back {
+    display: inline-block;
+    margin-left: 10px;
+    padding: 13px 24px;
+    color: var(--cyan);
+    border: 1px solid #22d3ee77;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-decoration: none;
+}
+
+a.reset.back:hover {
+    background: #22d3ee22;
+}
+
+footer {
+    text-align: center;
+    padding: 22px 10px;
+    border-top: 1px solid #46054e73;
+    color: #0cbbe7;
+    font-size: 10px;
+    letter-spacing: 3px;
+}
+
+@media(max-width: 650px) {
+    header {
+        padding: 20px 5%;
+    }
+
+    .status {
+        font-size: 9px;
+    }
+
+    .images {
+        grid-template-columns: 1fr;
+    }
+
+    .hero {
+        padding-top: 38px;
+    }
+
+    .dashboard {
+        padding: 17px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">I<span>N</span>DEL.</div>
+    <div class="status">INDEL ONLINE</div>
+</header>
+
+<section class="hero">
+    <div class="tag">DRAGON BALL Z/ OBSERVACIÓN</div>
+    <h1>DRAGON BALL Z</h1>
+    <p>
+        Dos imágenes. Cinco diferencias.<br>
+        ¿Tienes lo necesario para superar el desafío?
+    </p>
+</section>
+
+<main>
+
+    <section class="dashboard">
+        <div>
+            <small>TIENES UNA MISIÓN</small>
+            <h2>Encuentra todas las diferencias</h2>
+        </div>
+
+        <div class="score">
+            <span id="score"></span><span style="color:#15ff009f"> ¿LOGRASTE ENCONTRAR LAS 5?</span>
+            
+        </div>
+    </section>
+
+    <div class="track">
+        <div id="bar"></div>
+    </div>
+
+    <section class="images">
+
+        <article class="image-card">
+            <div class="card-head">
+                <span> ORIGINAL</span>
+                <span>REFERENCIA</span>
+            </div>
+
+            <div class="photo">
+                <img src="goku1.jpg" alt="Imagen original">
+
+            
+            </div>
+        </article>
+
+        <article class="image-card">
+            <div class="card-head">
+                <span> MODIFICADA</span>
+                <span></span>
+            </div>
+
+            <div class="photo">
+                <img src="goku2.jpg" alt="Imagen modificada">
+                <button class="hit" data-id="1"
+    style="left:57%;top:14%"></button>
+
+<button class="hit" data-id="2"
+    style="left:05%;top:24%"></button>
+
+<button class="hit" data-id="3"
+    style="left:50%;top:48%"></button>
+
+<button class="hit" data-id="4"
+    style="left:24%;top:60%"></button>
+
+<button class="hit" data-id="5"
+    style="left:70%;top:78%"></button>
+
+            
+            </div>
+        </article>
+
+    </section>
+
+    <section class="bottom">
+        <div id="message" aria-live="polite">
+            ◈ DESAFÍO LISTO, BUENA SUERTE JUGADOR.
+        </div>
+
+        <button class="reset" onclick="restart()">
+            ↻ RESTABLECER JUEGO
+        </button>
+        <a class="reset back" href="index.html">← VOLVER AL INICIO</a>
+    </section>
+
+</main>
+
+<footer>
+ EXPERIENCE • LEVEL UP
+</footer>
+
+<script src="firebase-config.js"></script>
+<script src="backend.js"></script>
+<script src="scores.js"></script>
+<script src="menu.js"></script>
+<script>
+WildCardScores.requireUser();   // si no hay usuario, vuelve al inicio
+
+const POINTS_PER_DIFFERENCE = 100;
+const found = new Set();
+
+document.querySelectorAll(".hit").forEach(button => {
+    button.addEventListener("click", () => {
+        const id = button.dataset.id;
+
+        if (found.has(id)) return;
+
+        found.add(id);
+
+        document.querySelectorAll(
+            '.hit[data-id="' + id + '"]'
+        ).forEach(item => {
+            item.classList.add("done");
+        });
+
+        const total = found.size;
+
+        document.getElementById("score").textContent =
+            String(total).padStart(2, "0");
+
+        document.getElementById("bar").style.width =
+            (total / 5 * 100) + "%";
+
+        const message = document.getElementById("message");
+
+        if (total === 5) {
+            // Juego completado: se suman los puntos al usuario actual
+            const earned = total * POINTS_PER_DIFFERENCE;
+            const grand = WildCardScores.addPoints("diferencias", earned);
+            message.textContent =
+                "🏆 LEVEL COMPLETE! ERES UN MASTER DE LA OBSERVACIÓN. +" + earned + " PUNTOS" +
+                (grand ? " (TU TOTAL: " + grand.toLocaleString("en-US") + ")" : "");
+        } else {
+            message.textContent =
+                "✓ NICE FIND! " + (5 - total) +
+                " DIFERENCIA(S) RESTANTE(S).";
+        }
+    });
+});
+
+function restart() {
+    found.clear();
+
+    document.querySelectorAll(".hit").forEach(button => {
+        button.classList.remove("done");
+    });
+
+    document.getElementById("score").textContent = "00";
+    document.getElementById("bar").style.width = "0%";
+
+    document.getElementById("message").textContent =
+        "◈ Listo para el desafío. Buena suerte, jugador.";
+}
+</script>
+
+</body>
+</html>

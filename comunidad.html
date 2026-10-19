@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="description" content="Comunidad de WildCard Arcade: chatea con otros jugadores y deja tu reseña.">
+<title>Comunidad | WildCard Arcade</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800&family=Press+Start+2P&display=swap');
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;min-height:100vh;color:#eee;
+  font-family:Orbitron,Arial,sans-serif;
+  background:
+    radial-gradient(circle at 91% 65%,rgba(36,112,145,.32),transparent 15%),
+    radial-gradient(circle at 75% 10%,rgba(112,30,160,.25),transparent 25%),
+    linear-gradient(90deg,#080718,#0a081d);
+  overflow-x:hidden;
+}
+.scanlines{
+  position:fixed;inset:0;z-index:20;pointer-events:none;opacity:.07;
+  background:repeating-linear-gradient(to bottom,transparent 0 3px,#fff 4px,#fff 5px);
+}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+.wrap{width:min(1180px,100%);margin:0 auto;padding:28px 18px 50px}
+h1{
+  font-family:"Press Start 2P",monospace;
+  font-size:clamp(18px,4vw,30px);line-height:1.4;text-align:center;
+  margin:8px 0 10px;color:#e9faff;
+  text-shadow:0 0 4px #fff,0 0 12px #4df4ff,3px 3px 0 #6e3b9d;
+}
+.sub{text-align:center;color:#b9b5c8;font-size:12px;margin:0 0 26px}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+
+.panel{
+  padding:16px;
+  background:linear-gradient(135deg,rgba(12,9,32,.95),rgba(11,8,29,.85));
+  border:1px solid rgba(214,61,227,.75);border-radius:9px;
+  box-shadow:0 0 10px rgba(210,40,230,.14),inset 0 0 18px rgba(110,38,150,.07);
+}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.panel h2{
+  margin:0;font-size:15px;color:#55efff;text-shadow:0 0 9px #27dce8;
+}
+.status{font-size:9px;letter-spacing:1px;color:#b9b5c8}
+.status.online{color:#4ade80}
+.status.offline{color:#ff7b7b}
+
+/* ---------- Chat ---------- */
+.messages{
+  height:420px;overflow-y:auto;padding:4px 8px 4px 2px;
+  border-top:1px solid rgba(78,225,255,.13);
+}
+.msg{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.msg .who{color:#51e8ff;font-weight:700;font-size:12px}
+.msg .time{color:#666276;font-size:9px;margin-left:8px}
+.msg p{margin:4px 0 0;font-size:12px;line-height:1.5;color:#d2cfdd;overflow-wrap:anywhere}
+.msg.mine .who{color:#ffe157}
+.empty{padding:26px 8px;text-align:center;color:#b9b5c8;font-size:12px;line-height:1.7}
+
+.send{display:flex;gap:8px;margin-top:12px}
+.send input{
+  flex:1;min-width:0;padding:11px 12px;
+  background:#08071c;color:#fff;font-family:inherit;font-size:13px;
+  border:1px solid rgba(66,226,255,.5);border-radius:6px;
+}
+.btn{
+  background:#170d27;color:#ff63da;font-family:inherit;
+  border:1px solid #ff4bdb;border-radius:6px;
+  padding:10px 16px;font-weight:800;font-size:11px;letter-spacing:1px;cursor:pointer;
+  box-shadow:0 0 10px rgba(255,75,219,.3);
+}
+.btn:hover:not(:disabled){background:#ff4bdb;color:#13091e}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.hint{min-height:18px;margin:8px 0 0;font-size:11px;color:#ffd84d}
+.hint a,.note a{color:#54efff}
+.hint.ok{color:#4ade80}
+
+/* ---------- Reseñas ---------- */
+.summary{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.avg{text-align:center;min-width:90px}
+.avg b{display:block;font-size:34px;color:#ffe157;text-shadow:0 0 12px rgba(255,225,87,.5)}
+.avg span{font-size:10px;color:#b9b5c8}
+.stars-line{color:#ffd84d;letter-spacing:2px;font-size:14px}
+.stars-line .off{color:#3a3550}
+.bars{flex:1;min-width:150px;display:grid;gap:4px}
+.bar{display:flex;align-items:center;gap:8px;font-size:10px;color:#b9b5c8}
+.bar i{flex:1;height:6px;border-radius:6px;background:#1b1633;overflow:hidden}
+.bar i b{display:block;height:100%;background:linear-gradient(90deg,#a855f7,#22d3ee)}
+
+.review-form{
+  margin-bottom:14px;padding:12px;
+  border:1px solid rgba(85,239,255,.3);border-radius:8px;background:rgba(85,239,255,.04);
+}
+.review-form .as{font-size:11px;color:#ddd;margin:0 0 8px}
+.review-form .as b{color:#ffe157}
+.starpick{display:inline-flex;flex-direction:row-reverse;gap:2px;margin-bottom:8px}
+.starpick input{position:absolute;opacity:0;width:1px;height:1px}
+.starpick label{font-size:30px;line-height:1;color:#3a3550;cursor:pointer;transition:color .15s}
+.starpick input:checked + label,
+.starpick input:checked ~ label,
+.starpick label:hover,
+.starpick label:hover ~ label{color:#ffd84d;text-shadow:0 0 10px rgba(255,216,77,.6)}
+.starpick input:focus-visible + label{outline:2px solid #4df3ff;outline-offset:2px}
+.review-form textarea{
+  width:100%;min-height:80px;resize:vertical;padding:10px 12px;
+  background:#08071c;color:#fff;font-family:inherit;font-size:13px;
+  border:1px solid rgba(66,226,255,.5);border-radius:6px;
+}
+.review-form .row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px}
+.counter{font-size:10px;color:#666276}
+
+.note{padding:12px;margin-bottom:14px;font-size:12px;line-height:1.6;color:#ddd;
+  border:1px solid rgba(255,216,77,.5);border-radius:8px;background:rgba(255,216,77,.05)}
+
+.reviews{max-height:380px;overflow-y:auto;padding-right:6px}
+.review{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+.review .top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.review .who{color:#51e8ff;font-weight:700;font-size:12px}
+.review.mine .who{color:#ffe157}
+.review .date{font-size:9px;color:#666276}
+.review p{margin:6px 0 0;font-size:12px;line-height:1.55;color:#d2cfdd;overflow-wrap:anywhere}
+
+textarea:focus-visible,input:focus-visible,.btn:focus-visible,a:focus-visible{outline:2px solid #4df3ff;outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;scroll-behavior:auto !important}}
+</style>
+</head>
+<body>
+<div class="scanlines" aria-hidden="true"></div>
+
+<main class="wrap">
+  <h1>COMUNIDAD</h1>
+  <p class="sub">Chatea con otros jugadores y déjanos tu reseña</p>
+
+  <div class="grid">
+
+    <!-- ===== CHAT ===== -->
+    <section class="panel" aria-labelledby="chatTitle">
+      <div class="panel-head">
+        <h2 id="chatTitle">CHAT GENERAL</h2>
+        <span class="status" id="chatStatus"></span>
+      </div>
+
+      <div class="messages" id="messages" role="log" aria-live="polite"></div>
+
+      <form class="send" id="chatForm" autocomplete="off">
+        <label class="sr" for="msg">Mensaje</label>
+        <input id="msg" maxlength="140" placeholder="Escribe un mensaje...">
+        <button class="btn" type="submit" id="sendBtn">ENVIAR</button>
+      </form>
+      <p class="hint" id="chatHint" aria-live="polite"></p>
+    </section>
+
+    <!-- ===== RESEÑAS ===== -->
+    <section class="panel" aria-labelledby="revTitle">
+      <div class="panel-head">
+        <h2 id="revTitle">RESEÑAS</h2>
+        <span class="status" id="revStatus"></span>
+      </div>
+
+      <div class="summary" id="summary"></div>
+      <div id="reviewBox"></div>
+      <div class="reviews" id="reviews"></div>
+    </section>
+
+  </div>
+</main>
+
+<script src="firebase-config.js"></script>
+<script src="backend.js"></script>
+<script src="scores.js"></script>
+<script src="community.js"></script>
+<script src="menu.js"></script>
+<script>
+(function () {
+  var C = window.WildCardCommunity;
+  var user = (window.WildCardScores.getUser() || "").trim();
+  var userId = user.toLowerCase();
+
+  var $ = function (id) { return document.getElementById(id); };
+  function el(tag, text, cls) {
+    var e = document.createElement(tag);
+    if (text !== undefined) e.textContent = text;   // textContent: todo texto de usuarios es seguro
+    if (cls) e.className = cls;
+    return e;
+  }
+  function link(text, href) {
+    var a = el("a", text);
+    a.href = href;
+    return a;
+  }
+
+  var STATUS = {
+    online:     ["● EN LÍNEA", "online"],
+    local:      ["● MODO LOCAL (SOLO ESTE NAVEGADOR)", ""],
+    connecting: ["● CONECTANDO…", ""],
+    offline:    ["● SIN CONEXIÓN (SOLO ESTE NAVEGADOR)", "offline"]
+  };
+  function setStatus(node, mode) {
+    node.textContent = STATUS[mode][0];
+    node.className = "status " + STATUS[mode][1];
+  }
+
+  function stars(n) {
+    var s = el("span", "", "stars-line");
+    s.setAttribute("role", "img");
+    s.setAttribute("aria-label", n + " de 5 estrellas");
+    for (var i = 1; i <= 5; i++) s.appendChild(el("span", "★", i <= n ? "" : "off"));
+    return s;
+  }
+  var timeFmt = function (t) { return new Date(t).toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" }); };
+  var dateFmt = function (t) { return new Date(t).toLocaleDateString("es", { day: "numeric", month: "short", year: "numeric" }); };
+
+  // =============== CHAT ===============
+  var messagesEl = $("messages"), chatForm = $("chatForm"), msgInput = $("msg"),
+      sendBtn = $("sendBtn"), chatHint = $("chatHint");
+  var firstChatRender = true;
+  var COOLDOWN_MS = 2000, lastSent = 0;
+
+  function hint(text, ok) {
+    chatHint.textContent = text || "";
+    chatHint.className = "hint" + (ok ? " ok" : "");
+  }
+
+  if (!user) {
+    msgInput.disabled = true;
+    sendBtn.disabled = true;
+    chatHint.append("Inicia sesión desde el ", link("inicio", "index.html"), " para escribir.");
+  }
+
+  C.watchChat(function (messages, mode) {
+    setStatus($("chatStatus"), mode);
+    var nearBottom = messagesEl.scrollHeight - messagesEl.scrollTop - messagesEl.clientHeight < 80;
+    messagesEl.innerHTML = "";
+
+    if (messages.length === 0) {
+      messagesEl.appendChild(el("div", "Aún no hay mensajes. ¡Escribe el primero!", "empty"));
+    }
+    messages.forEach(function (m) {
+      var box = el("div", undefined, "msg" + (user && m.name.toLowerCase() === userId ? " mine" : ""));
+      var head = el("div");
+      head.appendChild(el("span", m.name, "who"));
+      if (m.time) head.appendChild(el("span", timeFmt(m.time), "time"));
+      box.appendChild(head);
+      box.appendChild(el("p", m.text));
+      messagesEl.appendChild(box);
+    });
+    if (firstChatRender || nearBottom) messagesEl.scrollTop = messagesEl.scrollHeight;
+    firstChatRender = false;
+  });
+
+  chatForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var text = msgInput.value.trim();
+    if (!user || !text) return;
+    if (Date.now() - lastSent < COOLDOWN_MS) { hint("Espera un momento antes de enviar otro mensaje."); return; }
+    lastSent = Date.now();
+    hint("");
+    C.sendMessage(user, text).then(function () {
+      msgInput.value = "";
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }).catch(function () {
+      hint("No se pudo enviar el mensaje. Intenta de nuevo.");
+    });
+    msgInput.focus();
+  });
+
+  // =============== RESEÑAS ===============
+  var summaryEl = $("summary"), boxEl = $("reviewBox"), listEl = $("reviews");
+  var formBuilt = false, myReviewShown = false;
+
+  function renderSummary(list) {
+    summaryEl.innerHTML = "";
+    if (list.length === 0) return;
+    var total = 0, counts = [0, 0, 0, 0, 0, 0];
+    list.forEach(function (r) { total += r.rating; counts[r.rating]++; });
+    var avg = total / list.length;
+
+    var avgBox = el("div", undefined, "avg");
+    avgBox.appendChild(el("b", avg.toFixed(1)));
+    avgBox.appendChild(stars(Math.round(avg)));
+    avgBox.appendChild(el("span", list.length + (list.length === 1 ? " reseña" : " reseñas")));
+    summaryEl.appendChild(avgBox);
+
+    var bars = el("div", undefined, "bars");
+    for (var s = 5; s >= 1; s--) {
+      var row = el("div", undefined, "bar");
+      var track = el("i"), fill = el("b");
+      fill.style.width = (counts[s] / list.length * 100) + "%";
+      track.appendChild(fill);
+      row.append(el("span", s + "★"), track, el("span", String(counts[s])));
+      bars.appendChild(row);
+    }
+    summaryEl.appendChild(bars);
+  }
+
+  function buildForm() {
+    boxEl.innerHTML = "";
+    myReviewShown = false;
+
+    if (!user) {
+      var n = el("div", undefined, "note");
+      n.append("Inicia sesión desde el ", link("inicio", "index.html"), " para dejar tu reseña.");
+      boxEl.appendChild(n);
+      return;
+    }
+
+    var form = el("form", undefined, "review-form");
+    form.setAttribute("autocomplete", "off");
+    var as = el("p", undefined, "as");
+    as.append("Reseña como ", el("b", user), " (solo puedes dejar una)");
+    form.appendChild(as);
+
+    var pick = el("div", undefined, "starpick");
+    pick.setAttribute("role", "radiogroup");
+    pick.setAttribute("aria-label", "Calificación de 1 a 5 estrellas");
+    for (var i = 5; i >= 1; i--) {
+      var input = document.createElement("input");
+      input.type = "radio"; input.name = "rating"; input.id = "star" + i; input.value = i;
+      var label = el("label", "★");
+      label.htmlFor = "star" + i;
+      label.title = i + (i === 1 ? " estrella" : " estrellas");
+      pick.append(input, label);
+    }
+    form.appendChild(pick);
+
+    var ta = document.createElement("textarea");
+    ta.maxLength = 300; ta.placeholder = "Cuéntanos qué te pareció WildCard Arcade...";
+    ta.setAttribute("aria-label", "Tu reseña");
+    form.appendChild(ta);
+
+    var row = el("div", undefined, "row");
+    var counter = el("span", "0/300", "counter");
+    var btn = el("button", "PUBLICAR RESEÑA", "btn");
+    btn.type = "submit";
+    row.append(counter, btn);
+    form.appendChild(row);
+
+    var msg = el("p", "", "hint");
+    msg.setAttribute("aria-live", "polite");
+    form.appendChild(msg);
+
+    ta.addEventListener("input", function () { counter.textContent = ta.value.length + "/300"; });
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var checked = form.querySelector("input[name=rating]:checked");
+      var text = ta.value.trim();
+      if (!checked) { msg.className = "hint"; msg.textContent = "Elige de 1 a 5 estrellas."; return; }
+      if (!text) { msg.className = "hint"; msg.textContent = "Escribe tu comentario."; return; }
+      btn.disabled = true;
+      C.addReview(user, Number(checked.value), text).then(function () {
+        msg.className = "hint ok"; msg.textContent = "¡Gracias por tu reseña!";
+      }).catch(function (err) {
+        btn.disabled = false;
+        msg.className = "hint";
+        msg.textContent = err && err.message === "duplicate"
+          ? "Ya dejaste una reseña con este usuario."
+          : "No se pudo publicar tu reseña. Si ya dejaste una con este usuario, no se puede repetir.";
+      });
+    });
+
+    boxEl.appendChild(form);
+  }
+
+  function showMyReview(r) {
+    boxEl.innerHTML = "";
+    var n = el("div", undefined, "note");
+    n.appendChild(el("b", "✓ Ya dejaste tu reseña. ¡Gracias!"));
+    n.appendChild(document.createElement("br"));
+    n.appendChild(stars(r.rating));
+    n.appendChild(el("p", r.text));
+    boxEl.appendChild(n);
+    myReviewShown = true;
+    formBuilt = false;
+  }
+
+  C.watchReviews(function (list, mode) {
+    setStatus($("revStatus"), mode);
+    renderSummary(list);
+
+    var mine = user && list.filter(function (r) { return r.name.toLowerCase() === userId; })[0];
+    if (mine) { if (!myReviewShown) showMyReview(mine); }
+    else if (!formBuilt || myReviewShown) { buildForm(); formBuilt = true; }
+
+    listEl.innerHTML = "";
+    if (list.length === 0) {
+      listEl.appendChild(el("div", "Aún no hay reseñas. ¡Sé el primero en opinar!", "empty"));
+    }
+    list.forEach(function (r) {
+      var box = el("article", undefined, "review" + (user && r.name.toLowerCase() === userId ? " mine" : ""));
+      var top = el("div", undefined, "top");
+      top.appendChild(el("span", r.name, "who"));
+      top.appendChild(stars(r.rating));
+      if (r.time) top.appendChild(el("span", dateFmt(r.time), "date"));
+      box.appendChild(top);
+      box.appendChild(el("p", r.text));
+      listEl.appendChild(box);
+    });
+  });
+})();
+</script>
+</body>
+</html>

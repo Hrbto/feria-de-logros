@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Neon Arcade - Memorización</title>
+  <style>
+    :root{
+      --bg:#05010f;
+      --panel: rgba(15, 0, 40, 0.65);
+      --neon-pink:#ff2bd6;
+      --neon-cyan:#20e3ff;
+      --neon-green:#00ff99;
+      --text:#eaf6ff;
+      --muted:#a9c1d6;
+      --danger:#ff4d6d;
+      --shadow: 0 0 25px rgba(32,227,255,.35), 0 0 60px rgba(255,43,214,.18);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background:
+        radial-gradient(900px circle at 10% 10%, rgba(255,43,214,.18), transparent 60%),
+        radial-gradient(800px circle at 90% 30%, rgba(32,227,255,.18), transparent 55%),
+        radial-gradient(700px circle at 50% 90%, rgba(0,255,153,.12), transparent 60%),
+        linear-gradient(180deg, #030012, var(--bg));
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+      overflow-x:hidden;
+    }
+
+    .game{
+      width:min(980px, 100%);
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:16px;
+    }
+
+    .header{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      padding:14px 16px;
+      border:1px solid rgba(32,227,255,.25);
+      border-radius:16px;
+      background: linear-gradient(180deg, rgba(16,0,48,.65), rgba(16,0,48,.35));
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .header::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        linear-gradient(90deg, transparent, rgba(32,227,255,.22), transparent),
+        linear-gradient(180deg, transparent, rgba(255,43,214,.18), transparent);
+      transform: translateX(-60%);
+      animation: scan 2.2s linear infinite;
+      pointer-events:none;
+    }
+    @keyframes scan{
+      0% { transform: translateX(-60%); }
+      100% { transform: translateX(60%); }
+    }
+
+    .title{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      position:relative;
+      z-index:1;
+    }
+    .title h1{
+      margin:0;
+      font-size:18px;
+      letter-spacing:.5px;
+      text-transform:uppercase;
+      color:var(--neon-cyan);
+      text-shadow: 0 0 12px rgba(32,227,255,.55);
+    }
+    .title p{
+      margin:0;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .backLink{
+      color:var(--neon-cyan);
+      font-size:12px;
+      text-decoration:none;
+    }
+    .backLink:hover{ text-decoration:underline; }
+
+    .timerWrap{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      position:relative;
+      z-index:1;
+    }
+
+    .timerLabel{
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    .timer{
+      font-weight:900;
+      font-size:28px;
+      padding:8px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,43,214,.35);
+      background: rgba(255,43,214,.10);
+      box-shadow: 0 0 20px rgba(255,43,214,.28);
+      min-width:96px;
+      text-align:center;
+    }
+
+    .stage{
+      border-radius:18px;
+      border:1px solid rgba(32,227,255,.22);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      padding:16px;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .stage::after{
+      content:"";
+      position:absolute;
+      top:-40px;
+      left:-40px;
+      width:120px;
+      height:120px;
+      border-radius:50%;
+      background: rgba(32,227,255,.12);
+      filter: blur(10px);
+      animation: floaty 3s ease-in-out infinite alternate;
+      pointer-events:none;
+    }
+    @keyframes floaty{
+      from{ transform: translate(0,0); }
+      to{ transform: translate(40px, 60px); }
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap:16px;
+      align-items:start;
+    }
+
+    @media (max-width: 860px){
+      .row{ grid-template-columns: 1fr; }
+    }
+
+    .imagePanel{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      min-height: 360px;
+    }
+
+    .imageFrame{
+      border-radius:16px;
+      border:1px solid rgba(255,43,214,.35);
+      background: rgba(0,0,0,.25);
+      padding:10px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .imageFrame::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        linear-gradient(90deg, rgba(255,43,214,.35), transparent 40%, rgba(32,227,255,.25)),
+        linear-gradient(180deg, transparent, rgba(32,227,255,.18), transparent);
+      opacity:.35;
+      pointer-events:none;
+    }
+
+    img{
+      width:100%;
+      height: 310px;
+      object-fit: cover;
+      border-radius:12px;
+      display:block;
+      position:relative;
+      z-index:1;
+      box-shadow:
+        0 0 30px rgba(32,227,255,.18),
+        0 0 60px rgba(255,43,214,.12);
+    }
+
+    .subText{
+      color:var(--muted);
+      font-size:13px;
+      margin:0;
+    }
+
+    .quizPanel{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .quizTitle{
+      margin:0;
+      color:var(--neon-green);
+      text-shadow: 0 0 12px rgba(0,255,153,.35);
+      font-size:16px;
+      text-transform:uppercase;
+      letter-spacing:.4px;
+    }
+
+    .question{
+      padding:12px;
+      border-radius:14px;
+      border:1px solid rgba(0,255,153,.22);
+      background: rgba(0,255,153,.06);
+    }
+
+    .question p{
+      margin:0 0 10px 0;
+      font-size:13px;
+      color:#d9fff3;
+    }
+
+    .options{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    label.option{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      cursor:pointer;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(32,227,255,.18);
+      background: rgba(32,227,255,.06);
+      transition:.15s transform, .15s border-color, .15s box-shadow;
+      user-select:none;
+    }
+
+    label.option:hover{
+      transform: translateY(-1px);
+      border-color: rgba(32,227,255,.42);
+      box-shadow: 0 0 20px rgba(32,227,255,.18);
+    }
+
+    label.option input{
+      accent-color: var(--neon-cyan);
+      transform: scale(1.1);
+    }
+
+    .btnRow{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:6px;
+    }
+
+    button{
+      border:none;
+      cursor:pointer;
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:800;
+      letter-spacing:.3px;
+      color:#001018;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+      box-shadow: 0 0 30px rgba(32,227,255,.25), 0 0 40px rgba(255,43,214,.18);
+      transition:.15s transform;
+      flex: 1;
+      min-width: 180px;
+    }
+    button:hover{ transform: translateY(-1px); }
+
+    .btnSecondary{
+      background: rgba(32,227,255,.12);
+      color: var(--text);
+      border:1px solid rgba(32,227,255,.35);
+      box-shadow:none;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    .result{
+      margin-top:12px;
+      padding:12px;
+      border-radius:14px;
+      border:1px solid rgba(32,227,255,.25);
+      background: rgba(32,227,255,.08);
+      color:var(--text);
+    }
+
+    .result strong{
+      color:var(--neon-cyan);
+      text-shadow: 0 0 12px rgba(32,227,255,.45);
+    }
+
+    /* Estado de cuenta regresiva */
+    .timer.urgent{
+      border-color: rgba(255,77,109,.55);
+      background: rgba(255,77,109,.14);
+      box-shadow: 0 0 25px rgba(255,77,109,.25), 0 0 55px rgba(255,43,214,.16);
+    }
+  </style>
+</head>
+<body>
+  <div class="game">
+    <div class="header">
+      <div class="title">
+        <h1>NEON MEMORY ARCADE ⚡</h1>
+        <p>Memoriza la imagen (5 segundos) y responde el cuestionario.</p>
+        <a class="backLink" href="index.html">← Volver al inicio</a>
+      </div>
+
+      <div class="timerWrap">
+        <div class="timerLabel">Tiempo</div>
+        <div id="timer" class="timer">5</div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="row">
+        <!-- Panel de imagen -->
+        <div class="imagePanel">
+          <div class="imageFrame" id="imageFrame">
+            <img id="mainImage" alt="Imagen para memorizar" />
+          </div>
+          <p class="subText" id="imageHint">⏳ Concéntrate… la imagen desaparecerá al terminar el tiempo.</p>
+        </div>
+
+        <!-- Panel de cuestionario -->
+        <div class="quizPanel">
+          <h2 class="quizTitle" id="quizTitle">Cuestionario</h2>
+
+          <form id="quizForm" class="hidden">
+            <div class="question">
+              <p>1) ¿Qué color predominaba en la imagen?</p>
+              <div class="options">
+                <label class="option"><input type="radio" name="q1" value="cyan">Cian</label>
+                <label class="option"><input type="radio" name="q1" value="pink">Rosa/Magenta</label>
+                <label class="option"><input type="radio" name="q1" value="green">Verde</label>
+                <label class="option"><input type="radio" name="q1" value="blue">Azul</label>
+              </div>
+            </div>
+
+            <div class="question">
+              <p>2) ¿Había algún elemento brillante tipo neón?</p>
+              <div class="options">
+                <label class="option"><input type="radio" name="q2" value="yes">Sí</label>
+                <label class="option"><input type="radio" name="q2" value="no">No</label>
+              </div>
+            </div>
+
+            <div class="question">
+              <p>3) ¿Aparecía algún símbolo/forma clara (p. ej. un ícono o figura)?</p>
+              <div class="options">
+                <label class="option"><input type="radio" name="q3" value="yes">Sí</label>
+                <label class="option"><input type="radio" name="q3" value="no">No</label>
+              </div>
+            </div>
+
+            <div class="question">
+              <p>4) ¿La imagen tenía un fondo oscuro?</p>
+              <div class="options">
+                <label class="option"><input type="radio" name="q4" value="dark">Sí, oscuro</label>
+                <label class="option"><input type="radio" name="q4" value="light">No, claro</label>
+              </div>
+            </div>
+
+            <div class="question">
+              <p>5) ¿Cuánto tiempo viste la imagen?</p>
+              <div class="options">
+                <label class="option"><input type="radio" name="q5" value="5">5 segundos</label>
+                <label class="option"><input type="radio" name="q5" value="3">3 segundos</label>
+                <label class="option"><input type="radio" name="q5" value="7">7 segundos</label>
+                <label class="option"><input type="radio" name="q5" value="10">10 segundos</label>
+              </div>
+            </div>
+
+            <div class="btnRow">
+              <button type="button" id="submitBtn">🚀 Enviar respuestas</button>
+              <button type="button" id="resetBtn" class="btnSecondary">🔁 Reiniciar</button>
+            </div>
+
+            <div id="result" class="result hidden" aria-live="polite"></div>
+          </form>
+
+          <div id="readyBox">
+            <p class="subText">
+              🎮 Cuando termine el contador, se abrirá el cuestionario automáticamente.
+            </p>
+            <button id="startBtn" class="btnSecondary" type="button">▶️ Empezar memoria</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="firebase-config.js"></script>
+  <script src="backend.js"></script>
+  <script src="scores.js"></script>
+<script src="menu.js"></script>
+  <script>
+    WildCardScores.requireUser();   // si no hay usuario, vuelve al inicio
+
+    // =========================
+    // ⚙️ CONFIGURACIÓN
+    // =========================
+
+    // Cambia esta URL por tu imagen (URL directa o ruta local si usas el proyecto con archivos)
+    const IMAGE_URL = "https://picsum.photos/id/1060/1200/800"; 
+    // ↑ Puedes reemplazar por una imagen tuya. Ideal: una que puedas contestar con lógica.
+
+    const MEMO_SECONDS = 5;
+
+    // Respuestas correctas (ajústalas según TU imagen)
+    const CORRECT = {
+      q1: "cyan",
+      q2: "yes",
+      q3: "yes",
+      q4: "dark",
+      q5: "5"
+    };
+
+    // =========================
+    // 🎮 ELEMENTOS
+    // =========================
+    const timerEl = document.getElementById("timer");
+    const imageFrameEl = document.getElementById("imageFrame");
+    const mainImageEl = document.getElementById("mainImage");
+    const imageHintEl = document.getElementById("imageHint");
+
+    const quizFormEl = document.getElementById("quizForm");
+    const quizTitleEl = document.getElementById("quizTitle");
+
+    const startBtn = document.getElementById("startBtn");
+    const submitBtn = document.getElementById("submitBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const readyBox = document.getElementById("readyBox");
+    const resultEl = document.getElementById("result");
+
+    // =========================
+    // 🕹️ ESTADO
+    // =========================
+    let intervalId = null;
+    let awarded = false;   // evita sumar los puntos dos veces en la misma partida
+
+    function setTimer(value){
+      timerEl.textContent = value;
+      if (value <= 2) timerEl.classList.add("urgent");
+      else timerEl.classList.remove("urgent");
+    }
+
+    function startGame(){
+      // Cargar imagen
+      mainImageEl.src = IMAGE_URL;
+
+      // Reset UI
+      awarded = false;
+      resultEl.classList.add("hidden");
+      resultEl.innerHTML = "";
+      quizFormEl.classList.add("hidden");
+      readyBox.classList.add("hidden");
+
+      imageFrameEl.classList.remove("hidden");
+      imageHintEl.textContent = "⏳ Concéntrate… la imagen desaparecerá al terminar el tiempo.";
+
+      // Reiniciar inputs
+      const checked = quizFormEl.querySelectorAll('input[type="radio"]:checked');
+      checked.forEach(x => x.checked = false);
+
+      // Comenzar temporizador
+      let remaining = MEMO_SECONDS;
+      setTimer(remaining);
+
+      if (intervalId) clearInterval(intervalId);
+      intervalId = setInterval(() => {
+        remaining--;
+        setTimer(remaining);
+
+        if (remaining <= 0){
+          clearInterval(intervalId);
+          intervalId = null;
+          onTimeUp();
+        }
+      }, 1000);
+    }
+
+    function onTimeUp(){
+      // Desaparecer imagen
+      imageFrameEl.classList.add("hidden");
+      imageHintEl.textContent = "⏲️ Listo. Responde el cuestionario:";
+      timerEl.textContent = "0";
+
+      // Mostrar cuestionario
+      quizTitleEl.textContent = "Cuestionario (5 preguntas)";
+      quizFormEl.classList.remove("hidden");
+    }
+
+    function getSelectedValue(name){
+      const input = quizFormEl.querySelector(`input[name="${name}"]:checked`);
+      return input ? input.value : null;
+    }
+
+    function handleSubmit(){
+      if (awarded) return;   // ya se enviaron y puntuaron las respuestas
+
+      // Validación
+      const names = ["q1","q2","q3","q4","q5"];
+      for (const n of names){
+        if (!getSelectedValue(n)){
+          resultEl.classList.remove("hidden");
+          resultEl.innerHTML = `⚠️ Responde todas las preguntas antes de enviar.`;
+          return;
+        }
+      }
+
+      // Calcular puntaje
+      let score = 0;
+      for (const n of names){
+        if (getSelectedValue(n) === CORRECT[n]) score++;
+      }
+
+      // Puntos: 100 por respuesta correcta + 100 de bonus si son las 5
+      const pts = score * 100 + (score === 5 ? 100 : 0);
+      awarded = true;
+      const grand = pts > 0
+        ? WildCardScores.addPoints("memorizar", pts)
+        : WildCardScores.getTotal(WildCardScores.getUser());
+
+      // Mostrar resultado
+      resultEl.classList.remove("hidden");
+      resultEl.innerHTML = `
+        ✅ Tu puntaje: <strong>${score}/5</strong> · <strong>+${pts} puntos</strong><br/>
+        Tu total: <strong>${(grand || 0).toLocaleString("en-US")}</strong><br/>
+        ${score === 5 ? "🏆 Perfecto, nivel arcade pro." : "🎯 ¡Buen intento! Puedes reiniciar y memorizar mejor."}
+      `;
+    }
+
+    function handleReset(){
+      // Volver a estado inicial
+      awarded = false;
+      if (intervalId) clearInterval(intervalId);
+      intervalId = null;
+
+      setTimer(MEMO_SECONDS);
+      timerEl.textContent = String(MEMO_SECONDS);
+
+      imageFrameEl.classList.remove("hidden");
+      imageHintEl.textContent = "⏳ Concéntrate… la imagen desaparecerá al terminar el tiempo.";
+
+      quizFormEl.classList.add("hidden");
+      readyBox.classList.remove("hidden");
+      resultEl.classList.add("hidden");
+      resultEl.innerHTML = "";
+
+      // Ocultar imagen hasta empezar (opcional)
+      mainImageEl.src = "";
+    }
+
+    // =========================
+    // 🔗 EVENTOS
+    // =========================
+    startBtn.addEventListener("click", startGame);
+    submitBtn.addEventListener("click", handleSubmit);
+    resetBtn.addEventListener("click", handleReset);
+  </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- Puntuaciones: un documento por jugador ----------
+    function validScore() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['name', 'total', 'games', 'updatedAt'])
+        && d.name is string && d.name.size() >= 1 && d.name.size() <= 16
+        && d.total is int && d.total >= 0
+        && d.games is map;
+    }
+
+    match /scores/{playerId} {
+      allow read: if true;
+      // Nuevo jugador: máximo 1500 puntos de golpe
+      allow create: if validScore() && request.resource.data.total <= 1500;
+      // Jugador existente: los puntos solo pueden subir, máximo 1500 por jugada
+      allow update: if validScore()
+        && request.resource.data.total >= resource.data.total
+        && request.resource.data.total - resource.data.total <= 1500;
+      allow delete: if false;
+    }
+
+    // ---------- Chat: solo se pueden crear mensajes ----------
+    match /chat/{messageId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(['name', 'text', 'createdAt'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 16
+        && request.resource.data.text is string
+        && request.resource.data.text.size() >= 1 && request.resource.data.text.size() <= 140
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+
+    // ---------- Reseñas: una por jugador, solo se pueden crear ----------
+    // (el id del documento es el nombre; si ya existe, crear otra falla)
+    match /reviews/{playerId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(['name', 'rating', 'text', 'createdAt'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() >= 1 && request.resource.data.name.size() <= 16
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1 && request.resource.data.rating <= 5
+        && request.resource.data.text is string
+        && request.resource.data.text.size() >= 1 && request.resource.data.text.size() <= 300
+        && request.resource.data.createdAt == request.time;
+      allow update, delete: if false;
+    }
+  }
+}
